@@ -1,0 +1,91 @@
+ <!DOCTYPE html>
+<html> 
+	<head>
+		<meta charset="utf-8" />
+		<title>魔方</title>
+	<style>            
+  	body{                     
+  		margin:0px;   
+  		overflow: hidden;  
+  	}     
+  	canvas{              
+  		margin:0px;
+  		position:absolute;   
+  	}        
+  	button{    
+  		margin:0px;
+  		position:fixed;  
+  		background-color: white;
+  	}   
+  </style> 
+	</head> 
+<body>                                           
+  
+<script id = "starVertex" type = "x-shader/x-vertex">
+	attribute vec4 a_Position; 
+	   
+	uniform mat4 u_MvpMatrix;
+	varying vec2 v_Pos;  
+	void main(void){ 
+		gl_Position = u_MvpMatrix * a_Position;
+	    gl_PointSize =1.0 / gl_Position.w * 300.0; 
+	    v_Pos = gl_Position.xy / gl_Position.w;
+	}                                   
+</script>                      
+                            
+<script id = "starFragment" type = "x-shader/x-vertex">
+	#ifdef GL_ES                  
+		precision highp float; 
+	#endif    
+    varying vec2 v_Pos; 
+    uniform sampler2D u_Sampler;
+	void main(void){ 
+		    
+		  
+		if(length(gl_PointCoord.xy - vec2(0.5, 0.5)) > 0.5)
+		 discard; 
+	 vec2 temp = gl_PointCoord.xy - vec2(0.5, 0.5);
+	// float density = 0.002 / dot(temp, temp);
+	 float density =  exp(-dot(temp, temp) / 0.05);
+  
+	gl_FragColor = vec4(density, 0.0, 0.0, 1.0);
+    
+	}  
+</script>      
+
+<script id = "star2Vertex" type = "x-shader/x-vertex">
+	attribute vec4 a_Position; 
+    varying vec2 v_Pos;
+	void main(void){ 
+		gl_Position = a_Position;
+		v_Pos = a_Position.xy * 0.5 + 0.5;
+	}                           
+</script>                
+              
+<script id = "star2Fragment" type = "x-shader/x-vertex">
+	#ifdef GL_ES                
+		precision highp float; 
+	#endif       
+    varying vec2 v_Pos;
+    uniform sampler2D u_Sampler; 
+     uniform sampler2D u_Test; 
+	void main(void){ 
+		        
+	              
+	//if(texture2D(u_Sampler, v_Pos).x > 0.2)
+    float density = texture2D(u_Sampler, v_Pos).x;
+//gl_FragColor = texture2D(u_Test, vec2(texture2D(u_Sampler, v_Pos).x, texture2D(u_Sampler, v_Pos).x));
+gl_FragColor = texture2D(u_Test, vec2(1.0 - 0.7 * density, 1.0 - 0.5 * density) );
+	} 
+</script> 
+    
+<canvas id = "canvas"></canvas> 
+<script type="text/javascript" src="js/3Dtest.js" ></script>
+<script type="text/javascript" src="js/vector.js"></script>
+<script type="text/javascript" src = "js/Matrix.js" ></script>
+<script type="text/javascript" src="js/Tool.js" ></script> 
+<script type="text/javascript" src="js/CPU.js"></script>
+<script type="text/javascript" src = "js/main.js"></script>    
+ 
+</body>         
+</html>
